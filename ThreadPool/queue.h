@@ -8,8 +8,10 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#include "Task.h"
+
 typedef struct _QueueNode {
-	int value;
+	task_t task;
 	struct _QueueNode *next;
 } qnode_t;
 
@@ -22,5 +24,5 @@ typedef struct _Queue {
 
 queue_t* queue_init(int maxCapacity);
 void queue_destroy(queue_t *q);
-int queue_add(queue_t *q, int value);
-int queue_get(queue_t *q, int* value);
+int queue_add(queue_t *q, task_t value);
+int queue_get(queue_t *q, task_t* value);

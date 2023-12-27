@@ -1,7 +1,6 @@
 #include "ThreadPool.h"
 
-
-int threadPoolInit(int numOfThreads){
+int initThreadPool(int numOfThreads){
     PoolTids = (pthread_t*)malloc(numOfThreads * sizeof(pthread_t));
     TaskQueue = queue_init(100);
     for (int i = 0; i < numOfThreads; ++i){
@@ -14,14 +13,22 @@ int threadPoolInit(int numOfThreads){
 
 void* threadFunction(void* arg){
     while(1){
-        int socket;
-        if(queue_get(TaskQueue, &socket) == 0){
-            //обработка клиента
-        } else {
+        task_t task;
+        int code = queue_get(TaskQueue, &task);
+        if(code == 0){
+            handleClient(arg);
+        } else if(code == EAGAIN){
+            sleep(1);
+        }
+         else {
             fprintf(stderr, "Queue corrupted, exiting\n");
             break;
         }
     }
+}
+
+int addTask(task_t task){
+    queue_add(TaskQueue, task);
 }
 
 int threadPoolDestroy(){
